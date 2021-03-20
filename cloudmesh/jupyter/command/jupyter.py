@@ -18,8 +18,9 @@ class JupyterCommand(PluginCommand):
           Usage:
                 jupyter start USER HOST PORT [DIR]
                 jupyter tunnel USER HOST PORT
-                jupyter stop
+                jupyter stop USER HOST
                 jupyter open PORT
+                jupyter test USER HOST PORT [DIR]
 
           This command can start a jupyter notebook on a remote machine and
           use it in your browser.
@@ -82,5 +83,8 @@ class JupyterCommand(PluginCommand):
 
         elif arguments.open:
             jupyter.open()
+
+        elif arguments.test:
+            jupyter.test()
 
         return ""
