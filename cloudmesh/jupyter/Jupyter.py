@@ -34,18 +34,7 @@ class Jupyter:
                 Shell.browser(url)
 
     def stop(self):
-        command = f"killall jupyter-lab 2>&1"
-        print (command)
-        p = Popen(['ssh', '-T', f'{self.user}@{self.host}', command],
-                   stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                   universal_newlines=True)
-        p.stdin.flush()
-        while True:
-            l = p.stdout.readline().strip()
-            if l != None and l != "":
-                print (l)
-
-        ValueError("not yet implemented")
+        os.system(f"ssh {self.user}@{self.host} killall jupyter-lab")
 
     def tunnel(self):
         command = f"ssh -N -f -L localhost:{self.port}:localhost:{self.port} {self.user}@{self.host}"

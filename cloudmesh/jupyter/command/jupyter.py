@@ -20,7 +20,6 @@ class JupyterCommand(PluginCommand):
                 jupyter tunnel USER HOST PORT
                 jupyter stop USER HOST
                 jupyter open PORT
-                jupyter test USER HOST PORT [DIR]
 
           This command can start a jupyter notebook on a remote machine and
           use it in your browser.
@@ -52,19 +51,8 @@ class JupyterCommand(PluginCommand):
 
                 cms jupyter start USER HOST PORT
 
-            Step 3: Start the tunnel in a different terminal
-
-                cms jupyter start USER HOST PORT
-
-           Step 4: Open the jupyterlab
-
-                copy the https address that you see in the terminal for step 1
-                into your browser. It will look similar to
-
-                    http://127.0.0.1:8888/lab?token=1234...abcd
-
-                This does not  yet work
-                cms jupyter open PORT
+                Thsi command will aslo establich an SSH tunel and open in
+                the web browser jupyter lab
 
         """
 
