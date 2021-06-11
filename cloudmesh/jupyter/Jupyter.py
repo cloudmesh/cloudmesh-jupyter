@@ -7,12 +7,12 @@ from subprocess import PIPE
 from subprocess import STDOUT
 from cloudmesh.common.dotdict import dotdict
 import shlex
+from pathlib import Path
 
 class Jupyter:
 
 
-    def __init__(self, user:str, host:str, port:int, directory:str):
-        self.user = user
+    def __init__(self, host:str, port:int, directory:str):
         self.port = port
         self.host = host
         self.directory = directory or ""
@@ -20,19 +20,25 @@ class Jupyter:
         # self.db = YamlDB("~/.cloudmesh/jupyter.yml")
 
     def info(self):
+
         data = dotdict({
             "repo": Shell.run("git config --get remote.origin.url"),
             "python": Shell.run("which python"),
             "user": Shell.run("whoami"),
             "hostname": Shell.run("hostname"),
-            "cwd": path_expand(os.curdir)
+            "cwd": path_expand(os.curdir),
+            "home": str(Path.home())
         })
+
+        data.workdir = data.cwd.replace(f"{data.home}/", "")
+
+
         return data
 
     def start(self):
         command = f"source .bash_profile; jupyter-lab {self.directory} --no-browser --port={self.port} 2>&1"
         print (command)
-        p = Popen(['ssh', '-T', f'{self.user}@{self.host}', command],
+        p = Popen(['ssh', '-T', f'{self.host}', command],
                    stdin=PIPE, stdout=PIPE, stderr=PIPE,
                    universal_newlines=True)
         p.stdin.flush()
@@ -45,10 +51,15 @@ class Jupyter:
                 Shell.browser(url)
 
     def stop(self):
-        os.system(f"ssh {self.user}@{self.host} killall jupyter-lab")
+        os.system(f"ssh {self.host} killall jupyter-lab")
+        command = f'ps -a | fgrep "ssh -N -f -L localhost:{self.port}:localhost:{self.port} {self.host}"'
+        # print (command)
+        tunnel = Shell.run(command)
+        print (tunnel)
+
 
     def tunnel(self):
-        command = f"ssh -N -f -L localhost:{self.port}:localhost:{self.port} {self.user}@{self.host}"
+        command = f"ssh -N -f -L localhost:{self.port}:localhost:{self.port} {self.host}"
         print (command)
         os.system(command)
 

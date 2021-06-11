@@ -19,9 +19,9 @@ class JupyterCommand(PluginCommand):
         ::
 
           Usage:
-                jupyter start USER HOST PORT [DIR]
-                jupyter tunnel USER HOST PORT
-                jupyter stop USER HOST
+                jupyter lab HOST PORT [DIR]
+                jupyter tunnel HOST PORT
+                jupyter stop HOST PORT
                 jupyter open PORT
                 jupyter info
                 jupyter backup
@@ -54,16 +54,17 @@ class JupyterCommand(PluginCommand):
 
                 Note: After the start you will not be able to use that terminal
 
-                cms jupyter start USER HOST PORT
+                cms jupyter start HOST PORT
 
                 Thsi command will aslo establich an SSH tunel and open in
                 the web browser jupyter lab
 
         """
 
-        jupyter = Jupyter(arguments.USER, arguments.HOST, arguments.PORT, arguments.DIR)
 
-        if arguments.start:
+        jupyter = Jupyter(arguments.HOST, arguments.PORT, arguments.DIR)
+
+        if arguments.lab:
 
             jupyter.start()
 
