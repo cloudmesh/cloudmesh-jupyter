@@ -5,6 +5,7 @@ from subprocess import Popen
 from cloudmesh.common.util import path_expand
 from subprocess import PIPE
 from subprocess import STDOUT
+from cloudmesh.common.dotdict import dotdict
 import shlex
 
 class Jupyter:
@@ -17,6 +18,16 @@ class Jupyter:
         self.directory = directory or ""
 
         # self.db = YamlDB("~/.cloudmesh/jupyter.yml")
+
+    def info(self):
+        data = dotdict({
+            "repo": Shell.run("git config --get remote.origin.url"),
+            "python": Shell.run("which python"),
+            "user": Shell.run("whoami"),
+            "hostname": Shell.run("hostname"),
+            "cwd": path_expand(os.curdir)
+        })
+        return data
 
     def start(self):
         command = f"source .bash_profile; jupyter-lab {self.directory} --no-browser --port={self.port} 2>&1"

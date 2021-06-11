@@ -2,9 +2,12 @@ from cloudmesh.shell.command import command
 from cloudmesh.shell.command import PluginCommand
 from cloudmesh.common.console import Console
 from cloudmesh.common.util import path_expand
+from cloudmesh.common.util import backup_name
+from cloudmesh.common.util import yn_choice
 from pprint import pprint
 from cloudmesh.common.debug import VERBOSE
-
+from cloudmesh.common.Printer import Printer
+import os
 from cloudmesh.jupyter.Jupyter import Jupyter
 
 class JupyterCommand(PluginCommand):
@@ -20,6 +23,8 @@ class JupyterCommand(PluginCommand):
                 jupyter tunnel USER HOST PORT
                 jupyter stop USER HOST
                 jupyter open PORT
+                jupyter info
+                jupyter backup
 
           This command can start a jupyter notebook on a remote machine and
           use it in your browser.
@@ -74,5 +79,20 @@ class JupyterCommand(PluginCommand):
 
         elif arguments.test:
             jupyter.test()
+
+        elif arguments.info:
+            data = jupyter.info()
+            print (Printer.attribute(data))
+
+        elif arguments.backup:
+
+            data = jupyter.info()
+            data.backup = backup_name(data['cwd'])
+            print ("Generate backup")
+            print (f"From: {data.cwd}")
+            print (f"To:   {data.backup}")
+            if yn_choice("Continue"):
+                os.system(f"cp -r -v {data.cwd} {data.backup}")
+                Console.ok(f"Backup created at: {data.backup}")
 
         return ""
