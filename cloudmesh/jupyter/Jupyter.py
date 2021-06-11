@@ -22,16 +22,23 @@ class Jupyter:
     def info(self):
 
         data = dotdict({
+            "hostname": Shell.run("hostname"),
             "repo": Shell.run("git config --get remote.origin.url"),
             "python": Shell.run("which python"),
             "user": Shell.run("whoami"),
-            "hostname": Shell.run("hostname"),
             "cwd": path_expand(os.curdir),
-            "home": str(Path.home())
+            "home": str(Path.home()),
+            "port": self.port,
+            "tunnel": None
         })
 
         data.workdir = data.cwd.replace(f"{data.home}/", "")
 
+        if self.port is not None:
+            netstat = Shell.run(f"netstat -tulpen")
+            for line in  netstat.splitlines():
+                if self.port in line and "127.0.0.1" in line:
+                    data.tunnel = line.strip().split(" ")[-1].split("/")[0]
 
         return data
 
@@ -52,11 +59,9 @@ class Jupyter:
 
     def stop(self):
         os.system(f"ssh {self.host} killall jupyter-lab")
-        command = f'ps -a | fgrep "ssh -N -f -L localhost:{self.port}:localhost:{self.port} {self.host}"'
-        # print (command)
-        tunnel = Shell.run(command)
-        print (tunnel)
-
+        data = self.info()
+        if data.tunnel is not None:
+            os.system(f"kill -9 {data.tunnel}")
 
     def tunnel(self):
         command = f"ssh -N -f -L localhost:{self.port}:localhost:{self.port} {self.host}"

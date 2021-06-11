@@ -23,7 +23,7 @@ class JupyterCommand(PluginCommand):
                 jupyter tunnel HOST PORT
                 jupyter stop HOST PORT
                 jupyter open PORT
-                jupyter info
+                jupyter info [PORT]
                 jupyter backup
 
           This command can start a jupyter notebook on a remote machine and
@@ -61,6 +61,7 @@ class JupyterCommand(PluginCommand):
 
         """
 
+        VERBOSE(arguments)
 
         jupyter = Jupyter(arguments.HOST, arguments.PORT, arguments.DIR)
 
@@ -74,6 +75,8 @@ class JupyterCommand(PluginCommand):
 
         elif arguments.stop:
             jupyter.stop()
+            data = jupyter.info()
+            print (Printer.attribute(data))
 
         elif arguments.open:
             jupyter.open()
